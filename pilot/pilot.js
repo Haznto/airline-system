@@ -1,21 +1,31 @@
-const eventsEmitter = require('../events');
+require('dotenv').config()
+let port = process.env.PORT || 3000;
+let host = `http://localhost:${port}`
+let host2 = `http://localhost:${port}/airline`
+const io = require('socket.io-client')
+let socket = io.connect(host)
+let socket2 = io.connect(host2)
 
-eventsEmitter.on('new-flight',handleNewFlight)
+socket.on('new-flight-scheduled',handleArrived)
+socket.on('new-flight-scheduled',handleTookOff)
 
 
-function handleNewFlight(payload){
+function handleTookOff(payload){
     setTimeout(() => {
         console.log(`Pilot: flight with ID ‘${payload.Details.flightID}’ took-off
         `)
         payload.event = 'took-off';
         payload.time = new Date();
-        eventsEmitter.emit('took-off',payload)
+        socket2.emit('took-off',payload)
     },4000)
+}
+
+function handleArrived(payload){  
     setTimeout(() => {
         console.log(`Pilot: flight with ID ‘${payload.Details.flightID}’ has arrived
         `)
         payload.event = 'Arrived';
         payload.time = new Date()
-        eventsEmitter.emit('Arrived',payload)
+        socket.emit('Arrived',payload)
     },7000)
 }
