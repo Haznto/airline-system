@@ -6,6 +6,8 @@ const io = require('socket.io-client')
 let socket = io.connect(host)
 let socket2 = io.connect(host2)
 
+socket.emit('get-all')
+socket.on('flight',handleOnFightNotCatched)
 socket.on('new-flight-scheduled',handleArrived)
 socket.on('new-flight-scheduled',handleTookOff)
 
@@ -28,4 +30,11 @@ function handleArrived(payload){
         payload.time = new Date()
         socket.emit('Arrived',payload)
     },7000)
+}
+
+function handleOnFightNotCatched(payload){
+    Object.keys(payload.flights).forEach( id => {
+        console.log(`Pilot:Sorry i didn't catch this flight ID ${payload.flights[id].Details.flightID}`)
+        socket.emit('delete',id)
+    })
 }
