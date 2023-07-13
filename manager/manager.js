@@ -8,9 +8,13 @@ let port = process.env.PORT || 3000;
 let host = `http://localhost:${port}`
 const io = require('socket.io-client')
 const socket = io.connect(host)
+
+socket.emit('IamManager')
+
 socket.on('flight-arrival', greetFlight)
 socket.on('new-flight', onNewFlight)
 function onNewFlight(payload) {
+    
     setInterval(() => {
         let event = 'new-flight'
         let Flight = {
